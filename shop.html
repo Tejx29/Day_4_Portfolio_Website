@@ -251,6 +251,7 @@
           }
           this.checkoutTotal = this.cartTotal.toFixed(2);
           this.cartOpen = false;
+          this.prefillCheckout(); // Prefill fields
           this.showCheckoutModal = true;
         },
         confirmOrder() {
@@ -264,6 +265,11 @@
             alert('Please enter a valid 10-digit mobile number.');
             return;
           }
+          // Save name and email to localStorage
+          localStorage.setItem('savedName', this.checkoutName);
+          localStorage.setItem('savedEmail', this.checkoutEmail);
+          // Set a cookie to remember user has ordered before (expires in 30 days)
+          document.cookie = 'hasOrdered=true; max-age=' + (60*60*24*30) + '; path=/';
           this.confirmedName = this.checkoutName;
           this.confirmedEmail = this.checkoutEmail;
           this.confirmedPhone = this.checkoutPhone;
@@ -276,6 +282,13 @@
           this.checkoutPhone = '';
           this.checkoutAddress = '';
           this.cart = [];
+        },
+        // Prefill checkout fields from localStorage if available
+        prefillCheckout() {
+          const savedName = localStorage.getItem('savedName');
+          const savedEmail = localStorage.getItem('savedEmail');
+          if (savedName) this.checkoutName = savedName;
+          if (savedEmail) this.checkoutEmail = savedEmail;
         }
       }
     }
@@ -314,6 +327,26 @@
       }
     });
   }
+  // Show welcome back if cookie is set
+  document.addEventListener('DOMContentLoaded', function() {
+    if (document.cookie.includes('hasOrdered=true')) {
+      setTimeout(function() {
+        const msg = document.createElement('div');
+        msg.textContent = 'Welcome back! Thanks for shopping with us again.';
+        msg.style.position = 'fixed';
+        msg.style.bottom = '30px';
+        msg.style.right = '30px';
+        msg.style.background = '#4f46e5';
+        msg.style.color = 'white';
+        msg.style.padding = '16px 24px';
+        msg.style.borderRadius = '8px';
+        msg.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
+        msg.style.zIndex = 9999;
+        document.body.appendChild(msg);
+        setTimeout(function() { msg.remove(); }, 4000);
+      }, 800);
+    }
+  });
   </script>
 </body>
 </html>
