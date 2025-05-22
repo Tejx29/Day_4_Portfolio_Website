@@ -24,6 +24,7 @@
     }
     .button-underline {
       position: relative;
+      display: inline-block;
       transition: color 0.3s ease;
     }
     .button-underline::after {
@@ -31,13 +32,24 @@
       position: absolute;
       left: 0;
       bottom: 0;
-      width: 0%;
+      width: 100%;
       height: 2px;
       background-color: #4f46e5;
-      transition: width 0.3s ease;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+      pointer-events: none;
     }
-    .button-underline:hover::after {
-      width: 100%;
+    .button-underline:hover::after, .button-underline:focus::after, .button-underline:active::after {
+      transform: scaleX(1);
+    }
+    @media (max-width: 767px) {
+      .button-underline::after {
+        /* Remove always-visible underline on mobile. Keep animation. */
+        transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+        /* width: 100%; is already set above */
+        /* No transform: scaleX(1); here! */
+      }
     }
   </style>
 </head>
@@ -66,7 +78,7 @@
     </div>
     <!-- Mobile Nav -->
     <div x-show="navOpen" class="md:hidden bg-white border-t px-4 pb-4 flex flex-col gap-4">
-      <a href="/index.html" class="hover:text-indigo-600 button-underline" @click="navOpen = false">Home</a>
+      <a href="index.html" class="hover:text-indigo-600 button-underline" @click.prevent="navOpen = false; window.location.href='index.html'">Home</a>
       <a href="#products" class="hover:text-indigo-600 button-underline" @click="navOpen = false">Products</a>
       <button @click="cartOpen = true; navOpen = false" class="hover:text-indigo-600 text-left button-underline">Cart <span x-show="cart.length" class="ml-1 bg-indigo-600 text-white text-xs rounded-full px-2 py-0.5" x-text="cart.length"></span></button>
     </div>
